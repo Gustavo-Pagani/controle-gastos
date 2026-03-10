@@ -20,3 +20,19 @@ def salvar_transacao(descricao, valor, tipo):
 
     cursor.close()
     conexao.close()
+
+def listar_transacoes():
+
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    sql = "SELECT * FROM transacoes"
+
+    cursor.execute(sql)
+
+    resultados = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    return resultados
