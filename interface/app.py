@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from services.crud import salvar_transacao, listar_transacoes
+from services.crud import salvar_transacao, listar_transacoes, deletar_transacao
 
 
 def atualizar_tabela():
@@ -13,7 +13,36 @@ def atualizar_tabela():
     for linha in dados:
         tabela.insert("", tk.END, values=linha)
 
+def mostrar_botao_deletar(event):
+    
+    selecionado = tabela.selection()
 
+    if selecionado:
+        botao_deletar.pack(pady=5)
+
+def deletar():
+    
+    selecionado = tabela.selection()
+
+    if not selecionado:
+        messagebox.showerror("Erro", "Selecione uma transação!.")
+        return
+
+    item = tabela.item(selecionado)
+    dados = item["values"]
+
+    id_transacao = dados[0]
+
+    confirmar = messagebox.askyesno(
+        "confirmar",
+        "Deseja deletar esta transação?"
+    )
+
+    if confirmar:
+        deletar_transacao(id_transacao)
+        atualizar_tabela()
+        botao_deletar.pack_forget()
+        
 def salvar():
 
     descricao = entrada_descricao.get()
@@ -21,14 +50,14 @@ def salvar():
     tipo = tipo_var.get()
 
     if not descricao or not valor or not tipo:
-     messagebox.showerror("Erro", "Preencha todos os campos!.")
-     return
+        messagebox.showerror("Erro", "Preencha todos os campos!.")
+        return
     
     try:
         valor = float(valor)
     except ValueError:
         messagebox.showerror("Erro", "Digite um valor númerico válido!.")
-    
+        return 
 
     salvar_transacao(descricao, valor, tipo)
 
@@ -46,6 +75,7 @@ def iniciar_app():
     global entrada_valor
     global tipo_var
     global tabela
+    global botao_deletar
 
     # cria a janela principal
     janela = tk.Tk()
@@ -92,6 +122,10 @@ def iniciar_app():
     botao.grid(row=3, columnspan=2, pady=10)
 
     # -----------------------------
+    # Botão deletar
+    # -----------------------------
+    botao_deletar = tk.Button(janela, text="Deletar", command=deletar,bg="red",fg="white")
+    # -----------------------------
     # Tabela de transações
     # -----------------------------
     tabela = ttk.Treeview(
@@ -116,6 +150,8 @@ def iniciar_app():
 
 
     tabela.pack(pady=20, fill="x")
+
+    tabela.bind("<<TreeviewSelect>>", mostrar_botao_deletar)
 
     # carrega dados iniciais
     atualizar_tabela()

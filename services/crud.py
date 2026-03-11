@@ -36,3 +36,19 @@ def listar_transacoes():
     conexao.close()
 
     return resultados
+
+def deletar_transacao(id):
+
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    sql = "DELETE FROM transacoes WHERE id = %s "
+
+    cursor.execute(sql, (id,))
+
+    conexao.commit()
+
+    cursor.close()
+    conexao.close()
+
+
