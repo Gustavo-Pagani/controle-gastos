@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from services.crud import salvar_transacao, listar_transacoes
 
 
@@ -20,12 +20,24 @@ def salvar():
     valor = entrada_valor.get()
     tipo = tipo_var.get()
 
+    if not descricao or not valor or not tipo:
+     messagebox.showerror("Erro", "Preencha todos os campos!.")
+     return
+    
+    try:
+        valor = float(valor)
+    except ValueError:
+        messagebox.showerror("Erro", "Digite um valor númerico válido!.")
+    
+
     salvar_transacao(descricao, valor, tipo)
 
     entrada_descricao.delete(0, tk.END)
     entrada_valor.delete(0, tk.END)
 
     atualizar_tabela()
+
+    messagebox.showinfo("Sucesso", "Transação salva com sucesso!.")
 
 
 def iniciar_app():
@@ -69,7 +81,7 @@ def iniciar_app():
 
     tipo_var = tk.StringVar()
 
-    tipo_menu = ttk.Combobox(frame, textvariable=tipo_var)
+    tipo_menu = ttk.Combobox(frame, textvariable=tipo_var, state="readonly")
     tipo_menu["values"] = ("despesa", "receita")
     tipo_menu.grid(row=2, column=1)
 
