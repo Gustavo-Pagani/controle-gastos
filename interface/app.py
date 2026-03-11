@@ -107,7 +107,15 @@ def iniciar_app():
     tabela.heading("tipo", text="Tipo")
     tabela.heading("data", text="Data")
 
-    tabela.pack(pady=20)
+    tabela.column("id", width=50)
+    tabela.column("descricao", width=200)
+    tabela.column("valor", width=100)
+    tabela.column("tipo", width=100)
+    tabela.column("data", width=120)
+
+
+
+    tabela.pack(pady=20, fill="x")
 
     # carrega dados iniciais
     atualizar_tabela()
