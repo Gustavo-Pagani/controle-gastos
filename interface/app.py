@@ -2,6 +2,17 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from services.crud import salvar_transacao, listar_transacoes, deletar_transacao
 
+transacao_em_edicao = None
+
+
+def limpar_campos():
+    entrada_descricao.delete(0, tk.END)
+    entrada_valor.deete(0, tk.END)
+    tipo_var.set("")
+
+def esconder_botoes():
+    botao_deletar.pack_forget()
+    botao_editar.pack_forget()
 
 def atualizar_tabela():
 
@@ -13,12 +24,15 @@ def atualizar_tabela():
     for linha in dados:
         tabela.insert("", tk.END, values=linha)
 
-def mostrar_botao_deletar(event):
+def mostrar_botoes(event):
     
     selecionado = tabela.selection()
 
     if selecionado:
         botao_deletar.pack(pady=5)
+        botao_editar.pack(pady=5)
+    else:
+        esconder_botoes()
 
 def deletar():
     
@@ -42,7 +56,34 @@ def deletar():
         deletar_transacao(id_transacao)
         atualizar_tabela()
         botao_deletar.pack_forget()
-        
+
+def editar():
+    global transacao_em_edicao
+
+    selecionado = tabela.selection
+
+    if not selecionado:
+        messagebox.showerror("Erro", "Selecione uma transação!")
+        return
+    
+    item = tabela.item(selecionado)
+    dados = item["Values"]
+
+    id_transacao = dados[0]
+    descricao = dados[1]
+    valor = dados[2]
+    tipo = dados[3]
+
+    transacao_em_edicao = id_transacao
+
+    entrada_descricao.delete(0, tk.END)
+    entrada_descricao.insert(0, descricao)
+
+    entrada_valor.delete(0, tk.END)
+    entrada_valor.insert(0, valor)
+
+    tipo_var.set(tipo)
+
 def salvar():
 
     descricao = entrada_descricao.get()
@@ -59,14 +100,18 @@ def salvar():
         messagebox.showerror("Erro", "Digite um valor númerico válido!.")
         return 
 
-    salvar_transacao(descricao, valor, tipo)
+    if transacao_em_edicao is None:
+        salvar_transacao(descricao, valor, tipo)
+        messagebox.showinfo("Sucesso", "Transação salva com sucesso!")
 
-    entrada_descricao.delete(0, tk.END)
-    entrada_valor.delete(0, tk.END)
+    else:
+        editar_transacao(transacao_em_edicao, descricao, valor, tipo)
+        messagebox.showinfo("Sucesso", "Transação editada com sucesso!")
+        transacao_em_edicao = None
 
+    limpar_campos()
     atualizar_tabela()
-
-    messagebox.showinfo("Sucesso", "Transação salva com sucesso!.")
+    esconder_botoes()
 
 
 def iniciar_app():
@@ -76,6 +121,7 @@ def iniciar_app():
     global tipo_var
     global tabela
     global botao_deletar
+    global botao_editar
 
     # cria a janela principal
     janela = tk.Tk()
@@ -125,6 +171,12 @@ def iniciar_app():
     # Botão deletar
     # -----------------------------
     botao_deletar = tk.Button(janela, text="Deletar", command=deletar,bg="red",fg="white")
+    
+    # -----------------------------
+    # Botão editar
+    # -----------------------------
+    botao_editar = tk.Button(janela,text="Editar",command=editar)
+
     # -----------------------------
     # Tabela de transações
     # -----------------------------
