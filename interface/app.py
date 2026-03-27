@@ -1,13 +1,13 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from services.crud import salvar_transacao, listar_transacoes, deletar_transacao
+from services.crud import salvar_transacao, listar_transacoes, deletar_transacao, editar_transacao
 
 transacao_em_edicao = None
 
 
 def limpar_campos():
     entrada_descricao.delete(0, tk.END)
-    entrada_valor.deete(0, tk.END)
+    entrada_valor.delete(0, tk.END)
     tipo_var.set("")
 
 def esconder_botoes():
@@ -60,14 +60,14 @@ def deletar():
 def editar():
     global transacao_em_edicao
 
-    selecionado = tabela.selection
+    selecionado = tabela.selection()
 
     if not selecionado:
         messagebox.showerror("Erro", "Selecione uma transação!")
         return
-    
+
     item = tabela.item(selecionado)
-    dados = item["Values"]
+    dados = item["values"]
 
     id_transacao = dados[0]
     descricao = dados[1]
@@ -86,9 +86,11 @@ def editar():
 
 def salvar():
 
-    descricao = entrada_descricao.get()
-    valor = entrada_valor.get()
-    tipo = tipo_var.get()
+    global transacao_em_edicao
+
+    descricao = entrada_descricao.get().strip()
+    valor = entrada_valor.get().strip()
+    tipo = tipo_var.get().strip()
 
     if not descricao or not valor or not tipo:
         messagebox.showerror("Erro", "Preencha todos os campos!.")
@@ -102,7 +104,6 @@ def salvar():
 
     if transacao_em_edicao is None:
         salvar_transacao(descricao, valor, tipo)
-        messagebox.showinfo("Sucesso", "Transação salva com sucesso!")
 
     else:
         editar_transacao(transacao_em_edicao, descricao, valor, tipo)
