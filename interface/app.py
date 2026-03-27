@@ -171,7 +171,7 @@ def iniciar_app():
     # Botão deletar
     # -----------------------------
     botao_deletar = tk.Button(janela, text="Deletar", command=deletar,bg="red",fg="white")
-    
+
     # -----------------------------
     # Botão editar
     # -----------------------------
@@ -203,7 +203,7 @@ def iniciar_app():
 
     tabela.pack(pady=20, fill="x")
 
-    tabela.bind("<<TreeviewSelect>>", mostrar_botao_deletar)
+    tabela.bind("<<TreeviewSelect>>", mostrar_botoes)
 
     # carrega dados iniciais
     atualizar_tabela()
